@@ -1,7 +1,7 @@
 package com.faeterj.sbd;
 
 import java.io.IOException;
-
+import java.util.Arrays;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.*;
@@ -9,8 +9,8 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 public class App {
@@ -27,8 +27,13 @@ public class App {
         public void map(Object key, Text value,  Context context) throws IOException {
 
             IntWritable one = new IntWritable(1);
-            String valueString = value.toString();
-            String[] SingleCountryData = valueString.split(",");
+            final String line = value.toString();
+            final String separator = ",";
+            
+            String[] SingleCountryData = Arrays.stream(line.split(separator))
+                    .map(s -> s.trim())
+                    .toArray(v -> new String[v]);
+
             Text word = new Text(SingleCountryData[7]);
 
             try {
